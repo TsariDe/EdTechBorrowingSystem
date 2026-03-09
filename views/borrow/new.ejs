@@ -1,0 +1,145 @@
+<%- include('../partials/header') %>
+
+    <div class="page-header">
+        <h1 class="page-title"><i class="fas fa-plus-circle"></i> New Borrow Request</h1>
+    </div>
+
+    <form action="/borrow/preview" method="POST" id="borrowForm">
+        <div class="borrow-grid">
+            <!-- Left: Equipment Checklist -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-boxes"></i> Select Equipment</h2>
+                    <span class="badge-count" id="selectedCount">0 selected</span>
+                </div>
+                <div class="card-body">
+                    <input type="text" id="equipSearch" class="form-control mb-3" placeholder="Search items..." />
+                    <div class="equipment-checklist" id="equipList">
+                        <% if (equipment.length) { %>
+                            <% equipment.forEach(e=> { %>
+                                <% const prefillIndex=prefill ? prefill.itemIds.indexOf(String(e._id)) : -1; %>
+                                    <% const isPrefilled=prefillIndex !==-1; %>
+                                        <% const prefillQty=isPrefilled ? prefill.itemQtys[prefillIndex] : 1; %>
+                                            <div class="equip-item" data-name="<%= e.name.toLowerCase() %>">
+                                                <label class="equip-label">
+                                                    <input type="checkbox" class="equip-checkbox" name="itemIds[]"
+                                                        value="<%= e._id %>" onchange="updateQtyVisibility(this)"
+                                                        <%=isPrefilled ? 'checked' : '' %> />
+                                                    <div class="equip-info">
+                                                        <div class="equip-name">
+                                                            <%= e.name %>
+                                                        </div>
+                                                        <div class="equip-meta"><span class="category-badge">
+                                                                <%= e.category %>
+                                                            </span> &bull; Available: <strong>
+                                                                <%= e.availableQty %>
+                                                            </strong></div>
+                                                    </div>
+                                                </label>
+                                                <div class="equip-qty-wrap" id="qty-<%= e._id %>"
+                                                    style="display:<%= isPrefilled ? 'block' : 'none' %>">
+                                                    <input type="number" name="itemQtys[]"
+                                                        class="form-control qty-input" value="<%= prefillQty %>" min="1"
+                                                        max="<%= e.availableQty %>" placeholder="Qty" />
+                                                </div>
+                                            </div>
+                                            <% }) %>
+                                                <% } else { %>
+                                                    <div class="text-center text-muted py-4">No equipment available.
+                                                    </div>
+                                                    <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Borrower Details -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-user"></i> Borrower Details</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Borrower Name <span class="text-danger">*</span></label>
+                        <input type="text" name="borrower" class="form-control"
+                            placeholder="Enter full name, dept, or section..."
+                            value="<%= prefill ? prefill.borrower : '' %>" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Borrower Type</label>
+                        <select name="borrowerType" class="form-control">
+                            <% ['Student','Staff','Department','Other'].forEach(type=> { %>
+                                <option value="<%= type %>" <%=prefill && prefill.borrowerType===type ? 'selected' : ''
+                                    %>>
+                                    <%= type %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Purpose <span class="text-danger">*</span></label>
+                        <textarea name="purpose" class="form-control" rows="2" placeholder="Reason for borrowing..."
+                            required><%= prefill ? prefill.purpose : '' %></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Date Needed <span class="text-danger">*</span></label>
+                            <input type="date" name="dateNeeded" class="form-control"
+                                value="<%= prefill ? prefill.dateNeeded : '' %>" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Date to Return <span class="text-danger">*</span></label>
+                            <input type="date" name="dateToReturn" class="form-control"
+                                value="<%= prefill ? prefill.dateToReturn : '' %>" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Time Needed <span class="text-danger">*</span></label>
+                            <input type="time" name="timeNeeded" class="form-control"
+                                value="<%= prefill ? prefill.timeNeeded : '' %>" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Time to Return <span class="text-danger">*</span></label>
+                            <input type="time" name="timeToReturn" class="form-control"
+                                value="<%= prefill ? prefill.timeToReturn : '' %>" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea name="notes" class="form-control" rows="2"
+                            placeholder="Additional notes..."><%= prefill ? prefill.notes : '' %></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full" id="previewBtn" <%=prefill ? '' : 'disabled'
+                        %>>
+                        <i class="fas fa-receipt"></i> Preview Receipt
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <script>
+        function updateQtyVisibility(cb) {
+            const id = cb.value;
+            const wrap = document.getElementById('qty-' + id);
+            if (wrap) wrap.style.display = cb.checked ? 'block' : 'none';
+            updateCount();
+        }
+        function updateCount() {
+            const checked = document.querySelectorAll('.equip-checkbox:checked').length;
+            document.getElementById('selectedCount').textContent = checked + ' selected';
+            document.getElementById('previewBtn').disabled = checked === 0;
+        }
+        document.getElementById('equipSearch').addEventListener('input', function () {
+            const q = this.value.toLowerCase();
+            document.querySelectorAll('.equip-item').forEach(item => {
+                item.style.display = item.dataset.name.includes(q) ? '' : 'none';
+            });
+        });
+
+        // Sync selected count on page load (for prefill)
+        document.addEventListener('DOMContentLoaded', () => {
+            const checked = document.querySelectorAll('.equip-checkbox:checked').length;
+            document.getElementById('selectedCount').textContent = checked + ' selected';
+        });
+    </script>
+
+    <%- include('../partials/footer') %>

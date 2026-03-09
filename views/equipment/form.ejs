@@ -1,0 +1,55 @@
+<%- include('../partials/header') %>
+
+    <div class="page-header">
+        <h1 class="page-title"><i class="fas fa-<%= isEdit ? 'edit' : 'plus-circle' %>"></i>
+            <%= title %>
+        </h1>
+        <a href="/equipment" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+
+    <div class="card" style="max-width:600px">
+        <div class="card-body">
+            <form action="/equipment<%= isEdit ? '/' + equipment._id + '/edit' : '' %>" method="POST"
+                class="form-styled">
+                <div class="form-group">
+                    <label class="form-label">Equipment Name <span class="text-danger">*</span></label>
+                    <input type="text" name="name" class="form-control" value="<%= equipment.name || '' %>" required
+                        placeholder="e.g. Epson Projector" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category <span class="text-danger">*</span></label>
+                    <input type="text" name="category" class="form-control" value="<%= equipment.category || '' %>"
+                        required placeholder="e.g. Projector, Laptop, Camera" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-control" rows="2"
+                        placeholder="Optional description"><%= equipment.description || '' %></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Total Quantity <span class="text-danger">*</span></label>
+                        <input type="number" name="quantity" class="form-control" value="<%= equipment.quantity || 1 %>"
+                            min="0" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Condition</label>
+                        <select name="condition" class="form-control">
+                            <% ['Good', 'Fair' , 'Needs Repair' , 'Retired' ].forEach(c=> { %>
+                                <option value="<%= c %>" <%=equipment.condition===c ? 'selected' : '' %>><%= c %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i>
+                        <%= isEdit ? 'Update' : 'Add Equipment' %>
+                    </button>
+                    <a href="/equipment" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>

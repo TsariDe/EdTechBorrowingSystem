@@ -1,0 +1,89 @@
+<%- include('../partials/header') %>
+
+    <div class="page-header">
+        <h1 class="page-title"><i class="fas fa-clipboard-list"></i> Borrow Requests</h1>
+        <a href="/borrow/new" class="btn btn-primary"><i class="fas fa-plus"></i> New Request</a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="/borrow" method="GET" class="filter-form">
+                <div class="filter-row">
+                    <input type="text" name="search" class="form-control" placeholder="Search borrower..."
+                        value="<%= search %>" />
+                    <select name="status" class="form-control">
+                        <option value="">All Status</option>
+                        <% ['Pending','Approved','Released','Returned','Rejected'].forEach(s=> { %>
+                            <option value="<%= s %>" <%=status===s ? 'selected' : '' %>><%= s %>
+                            </option>
+                            <% }) %>
+                    </select>
+                    <input type="date" name="from" class="form-control" value="<%= from %>" placeholder="From" />
+                    <input type="date" name="to" class="form-control" value="<%= to %>" placeholder="To" />
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
+                    <a href="/borrow" class="btn btn-outline">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Borrower</th>
+                        <th>Purpose</th>
+                        <th>Items</th>
+                        <th>Status</th>
+                        <th>Date Needed</th>
+                        <th>Requested By</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (requests.length) { %>
+                        <% requests.forEach(r=> { %>
+                            <tr>
+                                <td>
+                                    <strong>
+                                        <%= r.borrower %>
+                                    </strong><br>
+                                    <small class="text-muted">
+                                        <%= r.borrowerType %>
+                                    </small>
+                                </td>
+                                <td><small>
+                                        <%= r.purpose.length> 50 ? r.purpose.substring(0,50) + '...' : r.purpose %>
+                                    </small></td>
+                                <td>
+                                    <%= r.items.length %> item(s)
+                                </td>
+                                <td><span class="badge badge-<%= r.status.toLowerCase() %>">
+                                        <%= r.status %>
+                                    </span></td>
+                                <td>
+                                    <%= moment(r.dateNeeded).format('MMM D, YYYY') %>
+                                </td>
+                                <td><small>
+                                        <%= r.requestedBy ? r.requestedBy.name : '-' %>
+                                    </small></td>
+                                <td>
+                                    <a href="/borrow/<%= r._id %>" class="btn btn-sm btn-outline"><i
+                                            class="fas fa-eye"></i> View</a>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted py-4">No borrow requests found.
+                                        </td>
+                                    </tr>
+                                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>

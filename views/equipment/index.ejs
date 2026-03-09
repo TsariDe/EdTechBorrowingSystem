@@ -1,0 +1,99 @@
+<%- include('../partials/header') %>
+
+    <div class="page-header">
+        <h1 class="page-title"><i class="fas fa-box-open"></i> Equipment</h1>
+        <a href="/equipment/new" class="btn btn-primary"><i class="fas fa-plus"></i> Add Equipment</a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="/equipment" method="GET" class="filter-form">
+                <div class="filter-row">
+                    <div class="form-group mb-0">
+                        <input type="text" name="search" class="form-control" placeholder="Search equipment..."
+                            value="<%= search %>" />
+                    </div>
+                    <div class="form-group mb-0">
+                        <select name="category" class="form-control">
+                            <option value="">All Categories</option>
+                            <% categories.forEach(cat=> { %>
+                                <option value="<%= cat %>" <%=selectedCategory===cat ? 'selected' : '' %>><%= cat %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
+                    <a href="/equipment" class="btn btn-outline">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Total Qty</th>
+                        <th>Available</th>
+                        <th>Condition</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (equipment.length) { %>
+                        <% equipment.forEach(e=> { %>
+                            <tr>
+                                <td><strong>
+                                        <%= e.name %>
+                                    </strong>
+                                    <% if (e.description) { %><br><small class="text-muted">
+                                            <%= e.description %>
+                                        </small>
+                                        <% } %>
+                                </td>
+                                <td><span class="category-badge">
+                                        <%= e.category %>
+                                    </span></td>
+                                <td>
+                                    <%= e.quantity %>
+                                </td>
+                                <td>
+                                    <span
+                                        class="<%= e.availableQty === 0 ? 'text-danger' : e.availableQty < 3 ? 'text-warning' : 'text-success' %>">
+                                        <strong>
+                                            <%= e.availableQty %>
+                                        </strong>
+                                    </span>
+                                </td>
+                                <td><span
+                                        class="badge badge-condition-<%= e.condition.toLowerCase().replace(' ', '-') %>">
+                                        <%= e.condition %>
+                                    </span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <a href="/equipment/<%= e._id %>/edit" class="btn btn-sm btn-outline"><i
+                                                class="fas fa-edit"></i></a>
+                                        <form action="/equipment/<%= e._id %>/delete" method="POST"
+                                            onsubmit="return confirm('Remove this equipment from inventory?')">
+                                            <button type="submit" class="btn btn-sm btn-danger"><i
+                                                    class="fas fa-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">No equipment found.</td>
+                                    </tr>
+                                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>

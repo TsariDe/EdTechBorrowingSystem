@@ -1,0 +1,42 @@
+<%- include('../partials/header') %>
+
+    <div class="page-header">
+        <h1 class="page-title"><i class="fas fa-<%= isEdit ? 'edit' : 'user-plus' %>"></i>
+            <%= title %>
+        </h1>
+        <a href="/staff" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+
+    <div class="card" style="max-width:540px">
+        <div class="card-body">
+            <form action="/staff<%= isEdit ? '/' + staffMember._id + '/edit' : '' %>" method="POST" class="form-styled">
+                <div class="form-group">
+                    <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                    <input type="text" name="name" class="form-control" value="<%= staffMember.name || '' %>" required
+                        placeholder="e.g. Juan dela Cruz" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Username <span class="text-danger">*</span></label>
+                    <input type="text" name="username" class="form-control" value="<%= staffMember.username || '' %>"
+                        required placeholder="e.g. jdelacruz" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        <%= isEdit ? 'New Password (leave blank to keep current)' : 'Password' %>
+                            <% if (!isEdit) { %><span class="text-danger">*</span>
+                                <% } %>
+                    </label>
+                    <input type="password" name="password" class="form-control" placeholder="Enter password" <%=isEdit
+                        ? '' : 'required' %>/>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i>
+                        <%= isEdit ? 'Update Staff' : 'Add Staff' %>
+                    </button>
+                    <a href="/staff" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>

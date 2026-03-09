@@ -1,0 +1,87 @@
+<%- include('../partials/header') %>
+
+    <div class="page-header">
+        <h1 class="page-title"><i class="fas fa-history"></i> Activity History</h1>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="/history" method="GET" class="filter-form">
+                <div class="filter-row">
+                    <input type="text" name="search" class="form-control" placeholder="Search borrower..."
+                        value="<%= search %>" />
+                    <select name="status" class="form-control">
+                        <option value="">All Status</option>
+                        <% ['Pending','Approved','Released','Returned','Rejected'].forEach(s=> { %>
+                            <option value="<%= s %>" <%=status===s ? 'selected' : '' %>><%= s %>
+                            </option>
+                            <% }) %>
+                    </select>
+                    <input type="date" name="from" class="form-control" value="<%= from %>" />
+                    <input type="date" name="to" class="form-control" value="<%= to %>" />
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
+                    <a href="/history" class="btn btn-outline">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Borrower</th>
+                        <th>Type</th>
+                        <th>Items</th>
+                        <th>Status</th>
+                        <th>Approved By</th>
+                        <th>Released By</th>
+                        <th>Returned By</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (requests.length) { %>
+                        <% requests.forEach(r=> { %>
+                            <tr>
+                                <td><small>
+                                        <%= moment(r.createdAt).format('MMM D, YYYY') %>
+                                    </small></td>
+                                <td><strong>
+                                        <%= r.borrower %>
+                                    </strong></td>
+                                <td><small>
+                                        <%= r.borrowerType %>
+                                    </small></td>
+                                <td>
+                                    <%= r.items.length %>
+                                </td>
+                                <td><span class="badge badge-<%= r.status.toLowerCase() %>">
+                                        <%= r.status %>
+                                    </span></td>
+                                <td><small>
+                                        <%= r.approvedBy ? r.approvedBy.name : '-' %>
+                                    </small></td>
+                                <td><small>
+                                        <%= r.releasedBy ? r.releasedBy.name : '-' %>
+                                    </small></td>
+                                <td><small>
+                                        <%= r.returnReceivedBy ? r.returnReceivedBy.name : '-' %>
+                                    </small></td>
+                                <td><a href="/borrow/<%= r._id %>" class="btn btn-sm btn-outline"><i
+                                            class="fas fa-eye"></i></a></td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="9" class="text-center text-muted py-4">No activity found.</td>
+                                    </tr>
+                                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>

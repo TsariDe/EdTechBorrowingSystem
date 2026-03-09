@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        <%= title %> – CJC EdTech
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-wrap">
+                <div class="logo-icon"><i class="fas fa-laptop"></i></div>
+                <div>
+                    <div class="logo-title">EdTech</div>
+                    <div class="logo-sub">Borrowing System</div>
+                </div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/dashboard" class="nav-item <%= title === 'Dashboard' ? 'active' : '' %>">
+                <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
+            </a>
+            <a href="/borrow/new" class="nav-item <%= title === 'New Borrow Request' ? 'active' : '' %>">
+                <i class="fas fa-plus-circle"></i><span>New Request</span>
+            </a>
+            <a href="/borrow" class="nav-item <%= title === 'Borrow Requests' ? 'active' : '' %>">
+                <i class="fas fa-clipboard-list"></i><span>Borrow Requests</span>
+            </a>
+            <a href="/equipment" class="nav-item <%= title === 'Equipment' ? 'active' : '' %>">
+                <i class="fas fa-box-open"></i><span>Equipment</span>
+            </a>
+            <a href="/history" class="nav-item <%= title === 'Activity History' ? 'active' : '' %>">
+                <i class="fas fa-history"></i><span>Activity History</span>
+            </a>
+            <% if (user && user.role==='admin' ) { %>
+                <div class="nav-divider">Admin</div>
+                <a href="/staff" class="nav-item <%= title === 'Staff Management' ? 'active' : '' %>">
+                    <i class="fas fa-users-cog"></i><span>Staff Management</span>
+                </a>
+                <a href="/audit-logs" class="nav-item <%= title === 'Audit Logs' ? 'active' : '' %>">
+                    <i class="fas fa-shield-alt"></i><span>Audit Logs</span>
+                </a>
+                <% } %>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="/account/settings" class="nav-item <%= title === 'Account Settings' ? 'active' : '' %>">
+                <i class="fas fa-user-cog"></i><span>Account Settings</span>
+            </a>
+            <a href="/logout" class="nav-item nav-logout">
+                <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <header class="topnav">
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+            <div class="topnav-title">
+                <%= title %>
+            </div>
+            <div class="topnav-user">
+                <div class="user-avatar">
+                    <%= user ? user.name.charAt(0).toUpperCase() : 'U' %>
+                </div>
+                <div class="user-info">
+                    <span class="user-name">
+                        <%= user ? user.name : 'User' %>
+                    </span>
+                    <span class="user-role badge-<%= user ? user.role : 'staff' %>">
+                        <%= user ? user.role.toUpperCase() : '' %>
+                    </span>
+                </div>
+            </div>
+        </header>
+        <main class="content">
+            <%- include('./alerts') %>

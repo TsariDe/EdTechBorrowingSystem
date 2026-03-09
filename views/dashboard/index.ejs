@@ -1,0 +1,132 @@
+<%- include('../partials/header') %>
+
+    <div class="page-header">
+        <h1 class="page-title"><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+        <a href="/borrow/new" class="btn btn-primary"><i class="fas fa-plus"></i> New Request</a>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card stat-red">
+            <div class="stat-icon"><i class="fas fa-box-open"></i></div>
+            <div class="stat-info">
+                <div class="stat-number">
+                    <%= totalEquipment %>
+                </div>
+                <div class="stat-label">Total Equipment</div>
+            </div>
+        </div>
+        <div class="stat-card stat-orange">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-info">
+                <div class="stat-number">
+                    <%= pendingCount %>
+                </div>
+                <div class="stat-label">Pending Requests</div>
+            </div>
+        </div>
+        <div class="stat-card stat-blue">
+            <div class="stat-icon"><i class="fas fa-handshake"></i></div>
+            <div class="stat-info">
+                <div class="stat-number">
+                    <%= activeCount %>
+                </div>
+                <div class="stat-label">Active Borrows</div>
+            </div>
+        </div>
+        <div class="stat-card stat-green">
+            <div class="stat-icon"><i class="fas fa-check-double"></i></div>
+            <div class="stat-info">
+                <div class="stat-number">
+                    <%= returnedToday %>
+                </div>
+                <div class="stat-label">Returned Today</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fas fa-clipboard-list"></i> Recent Requests</h2>
+                <a href="/borrow" class="btn btn-sm btn-outline">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Borrower</th>
+                            <th>Items</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (recentRequests.length) { %>
+                            <% recentRequests.forEach(r=> { %>
+                                <tr class="clickable-row" onclick="window.location='/borrow/<%= r._id %>'">
+                                    <td><strong>
+                                            <%= r.borrower %>
+                                        </strong><br><small class="text-muted">
+                                            <%= r.borrowerType %>
+                                        </small></td>
+                                    <td>
+                                        <%= r.items.length %> item(s)
+                                    </td>
+                                    <td><span class="badge badge-<%= r.status.toLowerCase() %>">
+                                            <%= r.status %>
+                                        </span></td>
+                                    <td>
+                                        <%= moment(r.createdAt).format('MMM D, YYYY') %>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-4">No requests yet.</td>
+                                        </tr>
+                                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fas fa-shield-alt"></i> Recent Activity</h2>
+                <% if (user.role==='admin' ) { %><a href="/audit-logs" class="btn btn-sm btn-outline">View All</a>
+                    <% } %>
+            </div>
+            <div class="card-body">
+                <% if (recentAudit.length) { %>
+                    <% recentAudit.forEach(log=> { %>
+                        <div class="activity-item">
+                            <div class="activity-icon activity-<%= log.action %>">
+                                <i
+                                    class="fas fa-<%= log.action === 'approved' ? 'check' : log.action === 'rejected' ? 'times' : log.action === 'released' ? 'shipping-fast' : log.action === 'returned' ? 'undo' : 'plus' %>"></i>
+                            </div>
+                            <div class="activity-info">
+                                <div class="activity-text">
+                                    <strong>
+                                        <%= log.performedBy ? log.performedBy.name : 'System' %>
+                                    </strong>
+                                    <em>
+                                        <%= log.action %>
+                                    </em> request for
+                                    <strong>
+                                        <%= log.borrowerName || 'Unknown' %>
+                                    </strong>
+                                </div>
+                                <div class="activity-time">
+                                    <%= moment(log.timestamp).fromNow() %>
+                                </div>
+                            </div>
+                        </div>
+                        <% }) %>
+                            <% } else { %>
+                                <p class="text-muted text-center py-4">No recent activity.</p>
+                                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>

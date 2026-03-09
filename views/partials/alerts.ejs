@@ -1,0 +1,16 @@
+<% if (messages && (messages.error || messages.success)) { %>
+    <% if (messages.error && messages.error.length) { %>
+        <div class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i>
+            <%= Array.isArray(messages.error) ? messages.error.join(', ') : messages.error %>
+      <button class="alert-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+    </div>
+  <% } %>
+  <% if (messages.success && messages.success.length) { %>
+    <div class="alert alert-success">
+      <i class="fas fa-check-circle"></i>
+      <%= Array.isArray(messages.success) ? messages.success.join(' , ') : messages.success %>
+      <button class="alert-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+    </div>
+  <% } %>
+<% } %>

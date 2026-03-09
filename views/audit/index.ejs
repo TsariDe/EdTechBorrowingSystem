@@ -1,0 +1,73 @@
+<%- include('../partials/header') %>
+
+    <div class="page-header">
+        <h1 class="page-title"><i class="fas fa-shield-alt"></i> Audit Logs</h1>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="/audit-logs" method="GET" class="filter-form">
+                <div class="filter-row">
+                    <input type="text" name="search" class="form-control" placeholder="Search borrower..."
+                        value="<%= search %>" />
+                    <select name="action" class="form-control">
+                        <option value="">All Actions</option>
+                        <% ['created','approved','rejected','released','returned'].forEach(a=> { %>
+                            <option value="<%= a %>" <%=action===a ? 'selected' : '' %>><%= a.charAt(0).toUpperCase() +
+                                    a.slice(1) %>
+                            </option>
+                            <% }) %>
+                    </select>
+                    <input type="date" name="from" class="form-control" value="<%= from %>" />
+                    <input type="date" name="to" class="form-control" value="<%= to %>" />
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
+                    <a href="/audit-logs" class="btn btn-outline">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Action</th>
+                        <th>Performed By</th>
+                        <th>Borrower</th>
+                        <th>Note</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (logs.length) { %>
+                        <% logs.forEach(log=> { %>
+                            <tr>
+                                <td><small>
+                                        <%= moment(log.timestamp).format('MMM D, YYYY h:mm A') %>
+                                    </small></td>
+                                <td><span class="badge badge-action-<%= log.action %>">
+                                        <%= log.action.toUpperCase() %>
+                                    </span></td>
+                                <td>
+                                    <%= log.performedBy ? log.performedBy.name : '-' %>
+                                </td>
+                                <td>
+                                    <%= log.borrowerName || '-' %>
+                                </td>
+                                <td><small class="text-muted">
+                                        <%= log.note || '-' %>
+                                    </small></td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">No audit logs found.</td>
+                                    </tr>
+                                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>

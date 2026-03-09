@@ -1,0 +1,63 @@
+<%- include('../partials/header') %>
+
+    <div class="page-header">
+        <h1 class="page-title"><i class="fas fa-users-cog"></i> Staff Management</h1>
+        <a href="/staff/new" class="btn btn-primary"><i class="fas fa-plus"></i> Add Staff</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (staff.length) { %>
+                        <% staff.forEach(s=> { %>
+                            <tr>
+                                <td><strong>
+                                        <%= s.name %>
+                                    </strong></td>
+                                <td><code><%= s.username %></code></td>
+                                <td>
+                                    <% if (s.isActive) { %>
+                                        <span class="badge badge-approved">Active</span>
+                                        <% } else { %>
+                                            <span class="badge badge-rejected">Inactive</span>
+                                            <% } %>
+                                </td>
+                                <td>
+                                    <%= new Date(s.createdAt).toLocaleDateString('en-PH') %>
+                                </td>
+                                <td>
+                                    <div class="action-btns">
+                                        <a href="/staff/<%= s._id %>/edit" class="btn btn-sm btn-outline"><i
+                                                class="fas fa-edit"></i></a>
+                                        <form action="/staff/<%= s._id %>/toggle-status" method="POST"
+                                            onsubmit="return confirm('<%= s.isActive ? 'Deactivate' : 'Activate' %> this staff member?')">
+                                            <button type="submit"
+                                                class="btn btn-sm <%= s.isActive ? 'btn-warning' : 'btn-success' %>">
+                                                <i class="fas fa-<%= s.isActive ? 'ban' : 'check' %>"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">No staff members found.</td>
+                                    </tr>
+                                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>

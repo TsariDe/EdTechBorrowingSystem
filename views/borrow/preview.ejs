@@ -1,0 +1,119 @@
+<%- include('../partials/header') %>
+
+    <div class="page-header">
+        <h1 class="page-title"><i class="fas fa-receipt"></i> Borrow Receipt Preview</h1>
+    </div>
+
+    <div class="receipt-container">
+        <div class="receipt-card">
+            <div class="receipt-header">
+                <div class="receipt-logo"><i class="fas fa-laptop"></i></div>
+                <div>
+                    <div class="receipt-title">CJC EdTech Office</div>
+                    <div class="receipt-sub">Equipment Borrow Receipt</div>
+                    <div class="receipt-date">Generated: <%= new Date().toLocaleString('en-PH') %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="receipt-section">
+                <div class="receipt-grid">
+                    <div>
+                        <div class="receipt-field-label">Borrower Name</div>
+                        <div class="receipt-field-value"><strong>
+                                <%= borrower %>
+                            </strong></div>
+                    </div>
+                    <div>
+                        <div class="receipt-field-label">Borrower Type</div>
+                        <div class="receipt-field-value">
+                            <%= borrowerType %>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="receipt-field-label">Date Needed</div>
+                        <div class="receipt-field-value">
+                            <%= moment(dateNeeded).format('MMMM D, YYYY') %>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="receipt-field-label">Return By</div>
+                        <div class="receipt-field-value">
+                            <%- moment(dateToReturn).format('MMM D, YYYY h:mm A') %>
+                        </div>
+                    </div>
+                </div>
+                <div class="receipt-field-label mt-3">Purpose</div>
+                <div class="receipt-field-value">
+                    <%= purpose %>
+                </div>
+                <% if (notes) { %>
+                    <div class="receipt-field-label mt-2">Notes</div>
+                    <div class="receipt-field-value">
+                        <%= notes %>
+                    </div>
+                    <% } %>
+            </div>
+
+            <div class="receipt-section">
+                <h3 class="receipt-section-title">Items to Borrow</h3>
+                <table class="table receipt-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Equipment</th>
+                            <th>Category</th>
+                            <th>Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% selectedItems.forEach((item, i)=> { %>
+                            <tr>
+                                <td>
+                                    <%= i + 1 %>
+                                </td>
+                                <td><strong>
+                                        <%= item.equipment.name %>
+                                    </strong></td>
+                                <td>
+                                    <%= item.equipment.category %>
+                                </td>
+                                <td>
+                                    <%= item.quantity %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+                <div class="receipt-total">Total Items: <strong>
+                        <%= selectedItems.length %>
+                    </strong></div>
+            </div>
+
+            <div class="receipt-footer-note">
+                By submitting this request, the borrower agrees to return all items in good condition by the specified
+                return date.
+            </div>
+        </div>
+
+        <!-- Submit or go back -->
+        <div class="receipt-actions">
+            <a href="/borrow/new" class="btn btn-outline btn-lg"><i class="fas fa-arrow-left"></i> Back & Edit</a>
+            <form action="/borrow/submit" method="POST" id="submitForm">
+                <input type="hidden" name="borrower" value="<%= borrower %>" />
+                <input type="hidden" name="borrowerType" value="<%= borrowerType %>" />
+                <input type="hidden" name="purpose" value="<%= purpose %>" />
+                <input type="hidden" name="dateNeeded" value="<%= dateNeeded %>" />
+                <input type="hidden" name="dateToReturn" value="<%= dateToReturn %>" />
+                <input type="hidden" name="notes" value="<%= notes || '' %>" />
+                <% selectedItems.forEach(item=> { %>
+                    <input type="hidden" name="itemIds[]" value="<%= item.equipment._id %>" />
+                    <input type="hidden" name="itemQtys[]" value="<%= item.quantity %>" />
+                    <% }) %>
+                        <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-paper-plane"></i> Submit
+                            Request</button>
+            </form>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
