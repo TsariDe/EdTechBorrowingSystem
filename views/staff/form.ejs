@@ -7,9 +7,12 @@
         <a href="/staff" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</a>
     </div>
 
-    <div class="card" style="max-width:540px">
+    <div class="card" style="max-width:620px">
         <div class="card-body">
             <form action="/staff<%= isEdit ? '/' + staffMember._id + '/edit' : '' %>" method="POST" class="form-styled">
+
+                <h3 class="section-heading"><i class="fas fa-id-card"></i> Account Details</h3>
+
                 <div class="form-group">
                     <label class="form-label">Full Name <span class="text-danger">*</span></label>
                     <input type="text" name="name" class="form-control" value="<%= staffMember.name || '' %>" required
@@ -29,7 +32,62 @@
                     <input type="password" name="password" class="form-control" placeholder="Enter password" <%=isEdit
                         ? '' : 'required' %>/>
                 </div>
-                <div class="form-actions">
+
+                <h3 class="section-heading mt-4"><i class="fas fa-shield-alt"></i> Permissions</h3>
+                <p class="text-muted" style="font-size:0.82rem;margin-bottom:1rem">Check the actions this staff member
+                    is allowed to perform.</p>
+
+                <div class="permissions-list">
+                    <label class="permission-item">
+                        <input type="checkbox" name="canCreateBorrowRequest" class="perm-checkbox" <%=(isEdit &&
+                            staffMember.permissions && staffMember.permissions.canCreateBorrowRequest) ? 'checked' :
+                            (!isEdit ? 'checked' : '' ) %>>
+                        <div class="perm-info">
+                            <div class="perm-label"><i class="fas fa-plus-circle text-primary"></i> Create Borrow
+                                Request</div>
+                            <div class="perm-desc">Can submit new borrow requests for equipment</div>
+                        </div>
+                    </label>
+
+                    <label class="permission-item">
+                        <input type="checkbox" name="canApproveRequests" class="perm-checkbox" <%=(isEdit &&
+                            staffMember.permissions && staffMember.permissions.canApproveRequests) ? 'checked' : '' %>>
+                        <div class="perm-info">
+                            <div class="perm-label"><i class="fas fa-check-circle text-success"></i> Approve / Reject
+                                Requests</div>
+                            <div class="perm-desc">Can approve or reject pending borrow requests</div>
+                        </div>
+                    </label>
+
+                    <label class="permission-item">
+                        <input type="checkbox" name="canReleaseItems" class="perm-checkbox" <%=(isEdit &&
+                            staffMember.permissions && staffMember.permissions.canReleaseItems) ? 'checked' : '' %>>
+                        <div class="perm-info">
+                            <div class="perm-label"><i class="fas fa-shipping-fast text-info"></i> Release Items</div>
+                            <div class="perm-desc">Can mark approved requests as released to the borrower</div>
+                        </div>
+                    </label>
+
+                    <label class="permission-item">
+                        <input type="checkbox" name="canReceiveReturns" class="perm-checkbox" <%=(isEdit &&
+                            staffMember.permissions && staffMember.permissions.canReceiveReturns) ? 'checked' : '' %>>
+                        <div class="perm-info">
+                            <div class="perm-label"><i class="fas fa-undo text-warning"></i> Receive Returns</div>
+                            <div class="perm-desc">Can confirm that borrowed items have been returned</div>
+                        </div>
+                    </label>
+
+                    <label class="permission-item">
+                        <input type="checkbox" name="canManageEquipment" class="perm-checkbox" <%=(isEdit &&
+                            staffMember.permissions && staffMember.permissions.canManageEquipment) ? 'checked' : '' %>>
+                        <div class="perm-info">
+                            <div class="perm-label"><i class="fas fa-box-open text-danger"></i> Manage Equipment</div>
+                            <div class="perm-desc">Can add, edit, and remove equipment from inventory</div>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="form-actions mt-4">
                     <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i>
                         <%= isEdit ? 'Update Staff' : 'Add Staff' %>
                     </button>

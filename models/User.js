@@ -7,6 +7,13 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: String, enum: ['admin', 'staff'], default: 'staff' },
   isActive: { type: Boolean, default: true },
+  permissions: {
+    canApproveRequests: { type: Boolean, default: false },  // approve & reject borrow requests
+    canReleaseItems: { type: Boolean, default: false },  // release items to borrower
+    canReceiveReturns: { type: Boolean, default: false },  // receive/confirm returned items
+    canManageEquipment: { type: Boolean, default: false },  // add, edit, remove equipment
+    canCreateBorrowRequest: { type: Boolean, default: true }, // submit a borrow request
+  },
 }, { timestamps: true });
 
 // Hash password before save

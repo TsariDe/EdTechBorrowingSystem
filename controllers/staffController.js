@@ -3,10 +3,14 @@ const User = require('../models/User');
 // GET /staff
 exports.index = async (req, res) => {
     try {
-        const staff = await User.find({ role: 'staff' }).sort({ name: 1 });
+        const { search } = req.query;
+        const query = { role: 'staff' };
+        if (search) query.name = { $regex: search, $options: 'i' };
+        const staff = await User.find(query).sort({ name: 1 });
         res.render('staff/index', {
             title: 'Staff Management',
             staff,
+            search: search || '',
             user: { name: req.session.userName, role: req.session.role },
             messages: { error: req.flash('error'), success: req.flash('success') },
         });
@@ -32,7 +36,14 @@ exports.create = async (req, res) => {
         const { name, username, password } = req.body;
         const exists = await User.findOne({ username: username.toLowerCase() });
         if (exists) { req.flash('error', 'Username already taken.'); return res.redirect('/staff/new'); }
-        await User.create({ name, username, password, role: 'staff' });
+        const permissions = {
+            canApproveRequests: req.body.canApproveRequests === 'on',
+            canReleaseItems: req.body.canReleaseItems === 'on',
+            canReceiveReturns: req.body.canReceiveReturns === 'on',
+            canManageEquipment: req.body.canManageEquipment === 'on',
+            canCreateBorrowRequest: req.body.canCreateBorrowRequest === 'on',
+        };
+        await User.create({ name, username, password, role: 'staff', permissions });
         req.flash('success', 'Staff member added successfully.');
         res.redirect('/staff');
     } catch (err) {
@@ -68,6 +79,13 @@ exports.update = async (req, res) => {
         if (req.body.password && req.body.password.trim() !== '') {
             staffMember.password = req.body.password;
         }
+        staffMember.permissions = {
+            canApproveRequests: req.body.canApproveRequests === 'on',
+            canReleaseItems: req.body.canReleaseItems === 'on',
+            canReceiveReturns: req.body.canReceiveReturns === 'on',
+            canManageEquipment: req.body.canManageEquipment === 'on',
+            canCreateBorrowRequest: req.body.canCreateBorrowRequest === 'on',
+        };
         await staffMember.save();
         req.flash('success', 'Staff updated successfully.');
         res.redirect('/staff');

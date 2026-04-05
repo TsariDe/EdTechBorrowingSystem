@@ -1,13 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const equipmentController = require('../controllers/equipmentController');
-const { requireLogin } = require('../middleware/auth');
+const { requireLogin, requirePermission } = require('../middleware/auth');
 
+// Viewing equipment — all logged-in users
 router.get('/', requireLogin, equipmentController.index);
-router.get('/new', requireLogin, equipmentController.getCreate);
-router.post('/', requireLogin, equipmentController.create);
-router.get('/:id/edit', requireLogin, equipmentController.getEdit);
-router.post('/:id/edit', requireLogin, equipmentController.update);
-router.post('/:id/delete', requireLogin, equipmentController.remove);
+
+// Add / edit / delete — requires canManageEquipment
+router.get('/new', requireLogin, requirePermission('canManageEquipment'), equipmentController.getCreate);
+router.post('/', requireLogin, requirePermission('canManageEquipment'), equipmentController.create);
+router.get('/:id/edit', requireLogin, requirePermission('canManageEquipment'), equipmentController.getEdit);
+router.post('/:id/edit', requireLogin, requirePermission('canManageEquipment'), equipmentController.update);
+router.post('/:id/delete', requireLogin, requirePermission('canManageEquipment'), equipmentController.remove);
 
 module.exports = router;

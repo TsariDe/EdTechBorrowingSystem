@@ -4,6 +4,20 @@
         <h1 class="page-title"><i class="fas fa-users-cog"></i> Staff Management</h1>
         <a href="/staff/new" class="btn btn-primary"><i class="fas fa-plus"></i> Add Staff</a>
     </div>
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="/staff" method="GET" class="filter-form">
+                <div class="filter-row">
+                    <input type="text" name="search" class="form-control" placeholder="Search by name..."
+                        value="<%= search %>" />
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+                    <% if (search) { %>
+                        <a href="/staff" class="btn btn-outline"><i class="fas fa-times"></i> Clear</a>
+                        <% } %>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <div class="card">
         <div class="card-body p-0">
@@ -12,6 +26,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Username</th>
+                        <th>Permissions</th>
                         <th>Status</th>
                         <th>Created</th>
                         <th>Actions</th>
@@ -26,23 +41,61 @@
                                     </strong></td>
                                 <td><code><%= s.username %></code></td>
                                 <td>
+                                    <div class="perm-tags">
+                                        <% const p=s.permissions || {}; %>
+                                            <% if (p.canCreateBorrowRequest) { %><span class="perm-tag perm-create"
+                                                    title="Create Borrow Request"><i
+                                                        class="fas fa-plus-circle"></i></span>
+                                                <% } %>
+                                                    <% if (p.canApproveRequests) { %><span class="perm-tag perm-approve"
+                                                            title="Approve/Reject Requests"><i
+                                                                class="fas fa-check-circle"></i></span>
+                                                        <% } %>
+                                                            <% if (p.canReleaseItems) { %><span
+                                                                    class="perm-tag perm-release"
+                                                                    title="Release Items"><i
+                                                                        class="fas fa-shipping-fast"></i></span>
+                                                                <% } %>
+                                                                    <% if (p.canReceiveReturns) { %><span
+                                                                            class="perm-tag perm-return"
+                                                                            title="Receive Returns"><i
+                                                                                class="fas fa-undo"></i></span>
+                                                                        <% } %>
+                                                                            <% if (p.canManageEquipment) { %><span
+                                                                                    class="perm-tag perm-equip"
+                                                                                    title="Manage Equipment"><i
+                                                                                        class="fas fa-box-open"></i></span>
+                                                                                <% } %>
+                                                                                    <% if (!p.canCreateBorrowRequest &&
+                                                                                        !p.canApproveRequests &&
+                                                                                        !p.canReleaseItems &&
+                                                                                        !p.canReceiveReturns &&
+                                                                                        !p.canManageEquipment) { %>
+                                                                                        <span class="text-muted"
+                                                                                            style="font-size:0.78rem">No
+                                                                                            permissions</span>
+                                                                                        <% } %>
+                                    </div>
+                                </td>
+                                <td>
                                     <% if (s.isActive) { %>
                                         <span class="badge badge-approved">Active</span>
                                         <% } else { %>
                                             <span class="badge badge-rejected">Inactive</span>
                                             <% } %>
                                 </td>
-                                <td>
-                                    <%= new Date(s.createdAt).toLocaleDateString('en-PH') %>
-                                </td>
+                                <td><small>
+                                        <%= new Date(s.createdAt).toLocaleDateString('en-PH') %>
+                                    </small></td>
                                 <td>
                                     <div class="action-btns">
-                                        <a href="/staff/<%= s._id %>/edit" class="btn btn-sm btn-outline"><i
-                                                class="fas fa-edit"></i></a>
+                                        <a href="/staff/<%= s._id %>/edit" class="btn btn-sm btn-outline"
+                                            title="Edit"><i class="fas fa-edit"></i></a>
                                         <form action="/staff/<%= s._id %>/toggle-status" method="POST"
                                             onsubmit="return confirm('<%= s.isActive ? 'Deactivate' : 'Activate' %> this staff member?')">
                                             <button type="submit"
-                                                class="btn btn-sm <%= s.isActive ? 'btn-warning' : 'btn-success' %>">
+                                                class="btn btn-sm <%= s.isActive ? 'btn-warning' : 'btn-success' %>"
+                                                title="<%= s.isActive ? 'Deactivate' : 'Activate' %>">
                                                 <i class="fas fa-<%= s.isActive ? 'ban' : 'check' %>"></i>
                                             </button>
                                         </form>
@@ -52,11 +105,24 @@
                             <% }) %>
                                 <% } else { %>
                                     <tr>
-                                        <td colspan="5" class="text-center text-muted py-4">No staff members found.</td>
+                                        <td colspan="6" class="text-center text-muted py-4">No staff members found. <a
+                                                href="/staff/new">Add one</a>.</td>
                                     </tr>
                                     <% } %>
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- Permission Legend -->
+    <div class="card mt-3">
+        <div class="card-body" style="padding: 0.85rem 1.25rem;">
+            <strong style="font-size:0.82rem;color:#6b7280">Permission Legend:</strong>
+            <span class="perm-tag perm-create"><i class="fas fa-plus-circle"></i></span> Create Request &nbsp;
+            <span class="perm-tag perm-approve"><i class="fas fa-check-circle"></i></span> Approve/Reject &nbsp;
+            <span class="perm-tag perm-release"><i class="fas fa-shipping-fast"></i></span> Release &nbsp;
+            <span class="perm-tag perm-return"><i class="fas fa-undo"></i></span> Receive Returns &nbsp;
+            <span class="perm-tag perm-equip"><i class="fas fa-box-open"></i></span> Manage Equipment
         </div>
     </div>
 

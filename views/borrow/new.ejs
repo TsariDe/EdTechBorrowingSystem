@@ -38,9 +38,11 @@
                                                 </label>
                                                 <div class="equip-qty-wrap" id="qty-<%= e._id %>"
                                                     style="display:<%= isPrefilled ? 'block' : 'none' %>">
-                                                    <input type="number" name="itemQtys[]"
+                                                    <input type="number" name="itemQtys[]" id="qtyInput-<%= e._id %>"
                                                         class="form-control qty-input" value="<%= prefillQty %>" min="1"
-                                                        max="<%= e.availableQty %>" placeholder="Qty" />
+                                                        max="<%= e.availableQty %>"
+                                                        placeholder="Qty (max <%= e.availableQty %>)" <%=isPrefilled
+                                                        ? '' : 'disabled' %> />
                                                 </div>
                                             </div>
                                             <% }) %>
@@ -105,7 +107,8 @@
                     <div class="form-group">
                         <label class="form-label">Notes</label>
                         <textarea name="notes" class="form-control" rows="2"
-                            placeholder="Additional notes..."><%= prefill ? prefill.notes : '' %></textarea>
+                            placeholder="Additional notes, room & location..."
+                            required><%= prefill ? prefill.notes : '' %></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary btn-full" id="previewBtn" <%=prefill ? '' : 'disabled'
                         %>>
@@ -120,7 +123,12 @@
         function updateQtyVisibility(cb) {
             const id = cb.value;
             const wrap = document.getElementById('qty-' + id);
+            const input = document.getElementById('qtyInput-' + id);
             if (wrap) wrap.style.display = cb.checked ? 'block' : 'none';
+            if (input) {
+                input.disabled = !cb.checked;
+                if (cb.checked) { input.value = input.value || 1; input.focus(); }
+            }
             updateCount();
         }
         function updateCount() {
